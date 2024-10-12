@@ -54,7 +54,9 @@ app.use(errorHandler);
 // });
 
 
-
+app.get('*', (req,res) => {
+    res.send("NOT  VALID  RRRR")
+})
 
 
 const PORT = process.env.PORT || 5000;
