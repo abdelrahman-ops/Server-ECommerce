@@ -53,6 +53,9 @@ app.use(errorHandler);
 //     res.json({ message: "Login successful server" });
 // });
 
+export default function handler(req, res) {
+    res.status(200).json({ message: 'Hello from Vercel!' });
+}
 
 app.get('*', (req,res) => {
     res.send("NOT  VALID  RRRR")
