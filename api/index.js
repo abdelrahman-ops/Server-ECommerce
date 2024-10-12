@@ -7,10 +7,10 @@ import Joi from "joi";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import router from './routes/index.js';
-import { routeNotFound, errorHandler } from './middlewares/errorMiddleware.js';
+import router from '../routes/index.js';
+import { routeNotFound, errorHandler } from '../middlewares/errorMiddleware.js';
 
-import dbConnection from './config/db.js';
+import dbConnection from '../config/db.js';
 
 dbConnection();
 const app = express();
@@ -53,9 +53,7 @@ app.use(errorHandler);
 //     res.json({ message: "Login successful server" });
 // });
 
-export default function handler(req, res) {
-    res.status(200).json({ message: 'Hello from Vercel!' });
-}
+
 
 app.get('*', (req,res) => {
     res.send("NOT  VALID  RRRR")
