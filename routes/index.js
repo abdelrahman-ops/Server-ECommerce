@@ -2,10 +2,10 @@ import express from "express";
 import productRoutes from './productsRoutes.js';
 import userRoutes from './usersRoutes.js';
 
-const router = express.Router();
+const routes = express.Router();
 
-router.use('/products', productRoutes);
-router.use('/users', userRoutes);
+routes.use('/products', productRoutes);
+routes.use('/users', userRoutes);
 
 
-export default router
+export default routes
