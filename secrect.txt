@@ -1,2 +1,15 @@
 abdelrahmanataa17
 ZWccQCkdttdsZzzb
+
+
+{
+    "version": 2,
+    "builds": [
+        { "src": "index.js", "use": "@vercel/node" }
+    ],
+    "routes": [
+        { "src": "/(.*)", "dest": "/index.js" },
+        { "src": "/images/(.*)", "dest": "/public/images/$1" },
+        { "src": "/public/images/(.*)", "dest": "/public/images/$1" }
+    ]
+}
