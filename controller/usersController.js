@@ -20,20 +20,20 @@ export const upload = multer({
 });
 
 export const registerUser = async (req, res) => {
-    const registerSchema = Joi.object({
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
-        username: Joi.string().required(),
-        number: Joi.string().pattern(/^[0-9]{10,15}$/).required().messages({
-            'string.pattern.base': 'Phone number must be between 10 and 15 digits.'
-        }),
-    });
+    // const registerSchema = Joi.object({
+    //     email: Joi.string().email().required(),
+    //     password: Joi.string().min(6).required(),
+    //     username: Joi.string().required(),
+    //     number: Joi.string().pattern(/^[0-9]{10,15}$/).required().messages({
+    //         'string.pattern.base': 'Phone number must be between 10 and 15 digits.'
+    //     }),
+    // });
 
     try {
-        const { error } = registerSchema.validate(req.body);
-        if (error) {
-            return res.status(422).json({ message: "Invalid data from server" });
-        }
+        // const { error } = registerSchema.validate(req.body);
+        // if (error) {
+        //     return res.status(422).json({ message: "Invalid data from server" });
+        // }
         const { username, firstName, lastName, number, email, password, isAdmin, dateOfBirth, gender } = req.body;
         
         const existingUser = await User.findOne({ email });
