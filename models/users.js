@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import mongoose from 'mongoose';
 
-// const {Schema} = mongoose ;
+const {Schema} = mongoose ;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
     username : {type : String , required : true , unique: true},
     firstName : {type : String , required : true},
     lastName : {type : String , required : true},
@@ -26,13 +26,14 @@ userSchema.set('toJSON', {
     }
 });
 
-// userSchema.pre("save", async function (next) {
-//     if (this.isModified("password")) {
-//         const salt = await bcrypt.genSalt(10);
-//         this.password = await bcrypt.hash(this.password, salt);
-//     }
-//     next();
-// });
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) {
+        next();
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
 
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
