@@ -2,12 +2,11 @@ import multer from 'multer';
 import User from "../models/users.js";
 import { response } from 'express';
 import { createJWT ,clearJWT  } from '../utils/utility.js';
-import bcrypt from 'bcryptjs';
-
+import Joi from 'joi';
 
 const storage = multer.diskStorage({
     destination: function (req , file , cb) {
-        cb(null, 'public/images');
+        cb(null, 'public/users');
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -21,29 +20,32 @@ export const upload = multer({
 });
 
 export const registerUser = async (req, res) => {
-    const { username, firstName, lastName, number, email, password, isAdmin, dateOfBirth, gender } = req.body;
-
-    // Validate the incoming data
-    // if (!password) {
-    //     return res.status(400).json({
-    //         status: false,
-    //         message: "Password is required"
-    //     });
-    // }
+    const registerSchema = Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().min(6).required(),
+        username: Joi.string().required(),
+        number: Joi.string().pattern(/^[0-9]{10,15}$/).required().messages({
+            'string.pattern.base': 'Phone number must be between 10 and 15 digits.'
+        }),
+    });
 
     try {
+        const { error } = registerSchema.validate(req.body);
+        if (error) {
+            return res.status(422).json({ message: "Invalid data from server" });
+        }
+        const { username, firstName, lastName, number, email, password, isAdmin, dateOfBirth, gender } = req.body;
+        
         const existingUser = await User.findOne({ email });
+        
         if (existingUser) {
             return res.status(400).json({
                 status: false,
                 message: "User already exists"
             });
         }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
         
-        const image = req.file ? `/images/${req.file.filename}` : null;
+        const image = req.file ? `/users/${req.file.filename}` : null;
         
         const newUser = new User({
             username,
@@ -51,29 +53,35 @@ export const registerUser = async (req, res) => {
             lastName,
             number,
             email,
-            password: hashedPassword, 
+            password, 
             isAdmin,
             dateOfBirth,
             gender,
             image: image,
         });
-
+        
         console.log('New User Object before saving:', newUser); 
+        
+        if(newUser) {
+            const savedUser = await newUser.save();
+            const token = createJWT(res, savedUser._id);
+            savedUser.password = undefined; 
 
-        const savedUser = await newUser.save();
 
-        const token = createJWT(res, savedUser._id);
-
-        savedUser.password = undefined; 
-
-        res.status(201).json({
-            status: true,
-            message: 'server saying : User created successfully',
-            data: {
-                user: savedUser,
-                token
-            },
-        });
+            res.status(201).json({
+                status: true,
+                message: 'server saying : User created successfully',
+                data: {
+                    user: savedUser,
+                    token
+                },
+            })
+        }else{
+            return res.status(400).json({ 
+                status: false, 
+                message: "Invalid user data" 
+            });
+        }
 
     } catch (error) {
         console.log('Error while creating user:', error);
@@ -83,73 +91,66 @@ export const registerUser = async (req, res) => {
 
 
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const loginSchema = Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string()
+            .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+    });
 
     try {
-        const user = await User.findOne({ email });
-        // console.log(user);
-        
+        const { error } = loginSchema.validate(req.body);
+        if (error) {
+            return res.status(422).json({ message: "Invalid data from server" });
+        }
 
-        if (!user || !(await user.matchPassword(password))) {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
             return res.status(400).json({
                 status: false,
                 message: "Invalid email or password"
             });
         }
-        console.log(user);
-        
+
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid email or password"
+            });
+        }
 
         const token = createJWT(res, user._id);
 
-        res.status(200).json({
+        return res.status(200).json({
             status: true,
             message: "Login successful",
             data: {
                 user: {
                     id: user._id,
                     username: user.username,
-                    firstName : user.firstName,
+                    firstName: user.firstName,
                     lastName: user.lastName,
-                    number  :user.number,
+                    number: user.number,
                     email: user.email,
                     isAdmin: user.isAdmin,
-                    dateOfBirth : user.dateOfBirth,
-                    gender : user.gender,
+                    dateOfBirth: user.dateOfBirth,
+                    gender: user.gender,
                     image: user.image,
                 },
                 token
             },
-            
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             status: false,
-            message: "Server error"
+            message: error.message
         });
     }
 };
-
-
-export const logoutUser = async (req, res) => {
-    try {
-        // Clear JWT cookie using the utility
-        clearJWT(res);
-
-        res.status(200).json({
-            status: true,
-            message: "Logout successful"
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            status: false,
-            message: "Server error"
-        });
-    }
-};
-
 
 
 export const updateUserProfile = async (req, res) => {
@@ -225,10 +226,6 @@ export const changeUserPassword = async (req, res) => {
     }
 };
 
-
-export const activateUserProfile = async (req, res) => {
-};
-
 export const deleteUserProfile = async (req, res) => {
     try {
         const userId = req.user.userId;  // Assuming req.user is populated by the auth middleware
@@ -273,7 +270,7 @@ export const getUserDetails = async (req, res) => {
     const { userId } = req.user;
     
     try {
-        const user = await User.findById(userId).select('-password'); // Exclude password
+        const user = await User.findById(userId).select('-password');
 
         if (!user) {
             return res.status(404).json({
@@ -293,5 +290,16 @@ export const getUserDetails = async (req, res) => {
             status: false,
             message: "Server error. Please try again later."
         });
+    }
+};
+
+export const logoutUser = async (req, res) => {
+    try {
+        clearJWT(res);
+    
+        res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: false, message: error.message });
     }
 };
