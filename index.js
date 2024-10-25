@@ -3,7 +3,7 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import morgan from "morgan";
-import http from 'http';
+
 
 import { routeNotFound, errorHandler } from './middlewares/errorMiddleware.js';
 import routes from './routes/index.js';
@@ -30,9 +30,9 @@ app.use(
         origin: [
             "http://localhost:5173" , 
             "https://44ever.netlify.app"
-        ] , 
+        ], 
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true
+        credentials: true,
     })
 );
 app.use(express.json());
@@ -56,6 +56,7 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
