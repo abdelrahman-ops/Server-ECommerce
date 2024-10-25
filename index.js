@@ -3,7 +3,7 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import morgan from "morgan";
-
+import http from 'http';
 
 import { routeNotFound, errorHandler } from './middlewares/errorMiddleware.js';
 import routes from './routes/index.js';
