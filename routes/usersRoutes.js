@@ -9,7 +9,7 @@ import {
     deleteUserProfile,
     upload,
 } from "../controller/usersController.js";
-// import { protectRoute } from "../middlewares/authMiddleware.js";
+import { protectRoute } from "../middlewares/authMiddleware.js";
 // import { isAdminRoute, protectRoute } from "../middlewares/authMiddleware.js";
 // import { limiter } from "../middlewares/limiterMiddleware.js";
 
