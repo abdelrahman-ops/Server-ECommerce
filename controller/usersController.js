@@ -260,13 +260,16 @@ export const deleteUserProfile = async (req, res) => {
 };
 
 export const getUserDetails = async (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({
-            status: false,
-            message: "User not authenticated.",
-        });
-    }
+    // if (!req.user) {
+    //     return res.status(401).json({
+    //         status: false,
+    //         message: "User not authenticated.",
+    //     });
+    // }
     const { userId } = req.user;
+    // console.log(req.user, " user cont req.user");
+    // console.log(userId);
+    
     try {
         const user = await User.findById(userId).select('-password');
 
