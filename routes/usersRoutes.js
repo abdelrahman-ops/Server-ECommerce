@@ -9,7 +9,7 @@ import {
     deleteUserProfile,
     upload,
 } from "../controller/usersController.js";
-import { protectRoute } from "../middlewares/authMiddleware.js";
+// import { protectRoute } from "../middlewares/authMiddleware.js";
 // import { isAdminRoute, protectRoute } from "../middlewares/authMiddleware.js";
 // import { limiter } from "../middlewares/limiterMiddleware.js";
 
@@ -19,10 +19,10 @@ router.post('/register', upload.single('image'), registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
 
-router.get('/profile', protectRoute ,getUserDetails);
+router.get('/profile' ,getUserDetails);
 
 
-router.put('/update' , protectRoute ,upload.single('image') ,updateUserProfile);
+router.put('/update',upload.single('image') ,updateUserProfile);
 router.put("/change-password", changeUserPassword);
 
 
