@@ -29,6 +29,7 @@ app.use(
     cors({ 
         origin: [
             "http://localhost:5173" , 
+            "http://localhost:5174",
             "https://44ever.netlify.app"
         ], 
         methods: ["GET", "POST", "PUT", "DELETE"],
