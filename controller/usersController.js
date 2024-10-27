@@ -160,7 +160,7 @@ export const updateUserProfile = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(
             req.user.userId,
             { $set: updates },
-            { new: true }
+            { new: true , runValidators: true }
         );
 
         if (!updatedUser) {
@@ -170,7 +170,7 @@ export const updateUserProfile = async (req, res) => {
             });
         }
 
-        updatedUser.password = undefined; // Remove password from response
+        updatedUser.password = undefined;
         res.status(200).json({
             status: true,
             message: "User profile updated successfully",
@@ -178,7 +178,7 @@ export const updateUserProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.log("Error updating user profile:",error);
         return res.status(500).json({
             status: false,
             message: "Server error"
@@ -266,16 +266,14 @@ export const getUserDetails = async (req, res) => {
             message: "User not authenticated.",
         });
     }
-
     const { userId } = req.user;
-    
     try {
         const user = await User.findById(userId).select('-password');
 
         if (!user) {
             return res.status(404).json({
                 status: false,
-                message: "User not found"
+                message: "User not foundgggggggg",
             });
         }
 
@@ -283,15 +281,15 @@ export const getUserDetails = async (req, res) => {
             status: true,
             user
         });
-
     } catch (error) {
-        console.log(error);
+        console.error("Error fetching user details:", error);  // Improved error logging
         return res.status(500).json({
             status: false,
-            message: "Server error. Please try again later."
+            message: "Server error. Please try again later.",
         });
     }
 };
+
 
 export const logoutUser = async (req, res) => {
     try {
