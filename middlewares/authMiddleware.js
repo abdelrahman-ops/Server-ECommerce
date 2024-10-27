@@ -8,11 +8,14 @@ const protectRoute  = async (req, res, next) => {
         if (token) {
             try {
                 const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+console.log(decodedToken);
 
                 const resp = await User.findById(decodedToken.userId).select("isAdmin email");
+                console.log(resp);
+                
 
                 if (!resp) {
-                    return res.status(401).json({ status: false, message: "User not found." });
+                    return res.status(404).json({ status: false, message: "User not found." });
                 }
 
                 req.user = {
