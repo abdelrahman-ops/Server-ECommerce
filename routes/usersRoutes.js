@@ -19,10 +19,10 @@ router.post('/register', upload.single('image'), registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
 
-router.get('/profile' ,getUserDetails);
+router.get('/profile' ,protectRoute ,getUserDetails);
 
 
-router.put('/update',upload.single('image') ,updateUserProfile);
+router.put('/update', upload.single('image') ,updateUserProfile);
 router.put("/change-password", changeUserPassword);
 
 
