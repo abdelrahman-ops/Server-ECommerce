@@ -4,13 +4,15 @@ import {
     getCart,
     updateCart,
     deleteProduct,
-    dropCart
+    dropCart,
+    transferCart
 } from "../controller/cartController.js";
 import { protectRoute } from "../middlewares/authMiddleware.js";
 
 const router  = express.Router();
 
 router.post('/add', protectRoute ,addProduct);
+router.post('/transfer', protectRoute ,transferCart);
 
 router.get('/cart', protectRoute ,getCart);
 
