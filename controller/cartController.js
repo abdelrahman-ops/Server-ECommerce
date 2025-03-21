@@ -54,8 +54,9 @@ export const addProduct = async (req, res) => {
 
 // Get the user's cart
 export const getCart = async (req, res) => {
-    const userId = req.user.userId;
-
+    const { userId } = req.user;
+    console.log(userId);
+    
     try {
         const cart = await Cart.findOne({ user: userId });
         if (!cart) {
@@ -141,8 +142,17 @@ export const dropCart = async (req, res) => {
 };
 
 export const transferCart = async (req, res) => {
+    console.log("Received request body:", req.body);
     const userId = req.user.userId; // Extracted from the token
-    const { items } = req.body; // Guest cart items
+    const { cartItems } = req.body;
+    
+    if (!cartItems || !Array.isArray(cartItems)) {
+        return res.status(400).json({ message: "Invalid cartItems format" });
+    }
+
+    cartItems.forEach(item => {
+        console.log("Processing item:", item);  // ✅ Log each item
+    });
 
     try {
         // Find the user's cart

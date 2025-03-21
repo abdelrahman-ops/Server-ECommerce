@@ -14,7 +14,7 @@ const router  = express.Router();
 router.post('/add', protectRoute ,addProduct);
 router.post('/transfer', protectRoute ,transferCart);
 
-router.get('/cart', protectRoute ,getCart);
+router.get('/get', protectRoute ,getCart);
 
 router.put('/update' , protectRoute , updateCart);
 
