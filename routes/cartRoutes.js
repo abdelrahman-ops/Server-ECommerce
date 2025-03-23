@@ -18,7 +18,7 @@ router.get('/get', protectRoute ,getCart);
 
 router.put('/update' , protectRoute , updateCart);
 
-router.delete("/delete-one", protectRoute ,deleteProduct);
-router.delete("/delete-cart", protectRoute , dropCart);
+router.delete("/delete-one-product", protectRoute ,deleteProduct);
+router.delete("/clear-cart", protectRoute , dropCart);
 
 export default router ;
