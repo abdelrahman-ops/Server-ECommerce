@@ -3,14 +3,18 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import morgan from "morgan";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 import { routeNotFound, errorHandler } from './middlewares/errorMiddleware.js';
 import routes from './routes/index.js';
 import dbConnection from './config/db.js';
 
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+
+
 
 // Establish database connection
 dbConnection();
@@ -22,17 +26,65 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Swagger configuration
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Lumira E-Commerce APP Documentation',
+            version: '1.0.0',
+            description: 'API documentation for your backend services',
+            contact: {
+                name: 'Abdelrahman Ataa',
+                email: 'abdelrahmanataa17@gmail.com',
+            },
+        },
+        servers: [
+            {
+                url: `http://localhost:${process.env.PORT || 5000}`,
+                description: 'Development server',
+            },
+            {
+                url: 'https://server-e-commerce-seven.vercel.app',
+                description: 'Production server',
+            },
+        ],
+        components: {
+        securitySchemes: {
+            bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+            },
+        },
+        },
+        security: [{
+        bearerAuth: [],
+        }],
+    },
+    apis: [
+        './routes/*.js', 
+        './routes/**/*.js',
+        './models/*.js',
+        'swagger/*.yaml'
+    ],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 
-        // Middleware setup
+// Middleware setup
 app.use(
     cors({ 
         origin: [
             "http://localhost:5173" , 
             "http://localhost:5174",
-            "https://44ever.netlify.app"
+            "https://44ever.netlify.app",
+            "https://lumira-seven.vercel.app",
+            "https://server-e-commerce-seven.vercel.app",
         ], 
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
     })
 );
@@ -46,6 +98,10 @@ app.use('/images', express.static(join(__dirname, 'public/images')));
 
 app.use('/users', express.static(join(__dirname, 'public/users')));
 
+// Swagger UI route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// API routes
 app.use('/api', routes);
 
 // Handle errors
@@ -60,4 +116,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`API documentation available at http://localhost:${PORT}/api-docs`);
 });

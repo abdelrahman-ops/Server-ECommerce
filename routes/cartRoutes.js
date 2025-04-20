@@ -1,24 +1,24 @@
 import express from "express";
 import {
-    addProduct,
+    addToCart,
     getCart,
-    updateCart,
-    deleteProduct,
-    dropCart,
-    transferCart
+    updateCartItem,
+    removeFromCart,
+    clearCart,
+    transferGuestCart
 } from "../controller/cartController.js";
 import { protectRoute } from "../middlewares/authMiddleware.js";
 
 const router  = express.Router();
 
-router.post('/add', protectRoute ,addProduct);
-router.post('/transfer', protectRoute ,transferCart);
+router.get('/get-cart', protectRoute ,getCart);
 
-router.get('/get', protectRoute ,getCart);
+router.post('/add-item', protectRoute ,addToCart);
+router.post('/transfer-guest', protectRoute ,transferGuestCart);
 
-router.put('/update' , protectRoute , updateCart);
+router.put('/update-item' , protectRoute , updateCartItem);
 
-router.delete("/delete-one-product", protectRoute ,deleteProduct);
-router.delete("/clear-cart", protectRoute , dropCart);
+router.delete("/remove-item", protectRoute ,removeFromCart);
+router.delete("/clear-cart", protectRoute , clearCart);
 
 export default router ;
