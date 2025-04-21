@@ -22,10 +22,10 @@ router.post('/logout', logoutUser);
 router.get('/profile' ,protectRoute ,getUserDetails);
 
 
-router.put('/update', upload.single('image') ,updateUserProfile);
-router.put("/change-password", changeUserPassword);
+router.put('/update', protectRoute ,upload.single('image') ,updateUserProfile);
+router.put("/update-password", changeUserPassword);
 
 
-router.delete("/:id", deleteUserProfile);
+router.delete("/delete", protectRoute ,deleteUserProfile);
 
 export default router ;

@@ -1,8 +1,8 @@
 import multer from 'multer';
 import User from "../models/users.js";
-import { response } from 'express';
 import { createJWT ,clearJWT  } from '../utils/utility.js';
 import Joi from 'joi';
+import Cart from '../models/cart.js';
 
 const storage = multer.diskStorage({
     destination: function (req , file , cb) {
@@ -153,14 +153,59 @@ export const loginUser = async (req, res) => {
 };
 
 
-export const updateUserProfile = async (req, res) => {
-    const updates = req.body;
+// export const updateUserProfile = async (req, res) => {
+//     // const updates = req.body;
 
+//     console.log(req.user, "req.user in updateUserProfile controller");
+    
+
+//     try {
+//         const updatedUser = await User.findByIdAndUpdate(
+//             req.user.userId,
+//             { $set: updates },
+//             { new: true , runValidators: true }
+//         );
+
+//         console.log("Inside update controller - req.user:", req.user);
+
+//         if (!updatedUser) {
+//             return res.status(404).json({
+//                 status: false,
+//                 message: "User not found"
+//             });
+//         }
+
+//         updatedUser.password = undefined;
+//         res.status(200).json({
+//             status: true,
+//             message: "User profile updated successfully",
+//             user: updatedUser
+//         });
+//         console.log('updatedUser', updatedUser) 
+
+//     } catch (error) {
+//         console.log("Error updating user profile:",error);
+//         return res.status(500).json({
+//             status: false,
+//             message: "Server error"
+//         });
+//     }
+// };
+
+export const updateUserProfile = async (req, res) => {
     try {
+        // Combine regular fields and file information
+        const updates = {
+            ...req.body,
+            ...(req.file && { image: `/users/${req.file.filename}` }) // Adjust path as needed
+        };
+
+        console.log('Updating with:', updates);
+
         const updatedUser = await User.findByIdAndUpdate(
             req.user.userId,
             { $set: updates },
-            { new: true , runValidators: true }
+            { new: true, runValidators: true }
         );
 
         if (!updatedUser) {
@@ -178,15 +223,13 @@ export const updateUserProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Error updating user profile:",error);
+        console.log("Error updating user profile:", error);
         return res.status(500).json({
             status: false,
             message: "Server error"
         });
     }
 };
-
-
 export const changeUserPassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
@@ -226,38 +269,6 @@ export const changeUserPassword = async (req, res) => {
     }
 };
 
-export const deleteUserProfile = async (req, res) => {
-    try {
-        const userId = req.user.userId;  // Assuming req.user is populated by the auth middleware
-
-        // Check if the user exists
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({
-                status: false,
-                message: "User not found"
-            });
-        }
-
-        // Delete the user
-        await User.findByIdAndDelete(userId);
-
-        // Clear JWT cookie using the utility
-        clearJWT(res);
-
-        return res.status(200).json({
-            status: true,
-            message: "User profile deleted successfully"
-        });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            status: false,
-            message: "Server error"
-        });
-    }
-};
 
 export const getUserDetails = async (req, res) => {
     // if (!req.user) {
@@ -302,5 +313,34 @@ export const logoutUser = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ status: false, message: error.message });
+    }
+};
+
+
+
+export const deleteUserProfile = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.user.userId);
+        console.log("User deleted:", user);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        await Cart.deleteMany({ userId: req.user.userId });
+
+        // Optionally cancel orders:
+        // await Order.updateMany({ userId: req.user.userId }, { status: 'cancelled' });
+
+        res.status(200).json({
+            success: true,
+            message: "Account deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting account:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Error deleting account",
+        });
     }
 };
