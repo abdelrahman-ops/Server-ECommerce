@@ -60,7 +60,7 @@ export const registerUser = async (req, res) => {
             image: image,
         });
         
-        console.log('New User Object before saving:', newUser); 
+        // console.log('New User Object before saving:', newUser); 
         
         if(newUser) {
             const savedUser = await newUser.save();
@@ -84,7 +84,7 @@ export const registerUser = async (req, res) => {
         }
 
     } catch (error) {
-        console.log('Error while creating user:', error);
+        // console.log('Error while creating user:', error);
         return res.status(400).json({ status: false, message: error.message });
     }
 };
@@ -223,7 +223,7 @@ export const updateUserProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Error updating user profile:", error);
+        // console.log("Error updating user profile:", error);
         return res.status(500).json({
             status: false,
             message: "Server error"
@@ -261,7 +261,7 @@ export const changeUserPassword = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({
             status: false,
             message: "Server error"
@@ -311,7 +311,7 @@ export const logoutUser = async (req, res) => {
     
         res.status(200).json({ message: "Logout successful" });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({ status: false, message: error.message });
     }
 };
@@ -321,7 +321,7 @@ export const logoutUser = async (req, res) => {
 export const deleteUserProfile = async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.user.userId);
-        console.log("User deleted:", user);
+        // console.log("User deleted:", user);
 
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });

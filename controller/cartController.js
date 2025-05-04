@@ -9,7 +9,7 @@ export const addToCart = async (req, res) => {
     const { productId, quantity = 1, size, price } = req.body;
 
     const product = await Product.findById(productId);
-    console.log("Found Product:", product); // Debug log
+    // console.log("Found Product:", product); // Debug log
     if (!product) {
         console.error(`Product ${productId} not found in database`);
         return res.status(404).json({ 
@@ -18,8 +18,8 @@ export const addToCart = async (req, res) => {
         });
     }
 
-    console.log("User ID add cart:", userId); // Debug user ID
-    console.log("Request Body:", req.body); // Debug request body
+    // console.log("User ID add cart:", userId); // Debug user ID
+    // console.log("Request Body:", req.body); // Debug request body
 
     try {
         const product = await Product.findById(productId);
