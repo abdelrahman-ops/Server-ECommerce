@@ -10,10 +10,10 @@ const protectRoute  = async (req, res, next) => {
         if (token) {
             try {
                 const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-                console.log(decodedToken);
+                // console.log(decodedToken);
 
                 const resp = await User.findById(decodedToken.userId).select("isAdmin email");
-                console.log(resp);
+                // console.log(resp);
                 
 
                 if (!resp) {
@@ -21,14 +21,15 @@ const protectRoute  = async (req, res, next) => {
                 }
 
                 req.user = {
+                    // _id: decodedToken.userId,
                     email: resp.email,
                     isAdmin: resp.isAdmin,
                     userId: decodedToken.userId,
                 };
-                console.log("User authenticated:", req.user);
+                // console.log("User authenticated:", req.user);
                 next();
             } catch (err) {
-                console.log("Token verification error:", err.message);
+                // console.log("Token verification error:", err.message);
                 return res.status(401).json({ status: false, message: "Invalid or expired token. Please log in again." });
             }
             
@@ -36,7 +37,7 @@ const protectRoute  = async (req, res, next) => {
             return res.status(401).json({ status: false, message: "Missing Token - Not authorized. Try logging in again." });
         }
     } catch (error) {
-        console.log("Authentication error:", error.message);
+        // console.log("Authentication error:", error.message);
         return res.status(401).json({ status: false, message: "Not authorized. Try login again." });
     }
 };
