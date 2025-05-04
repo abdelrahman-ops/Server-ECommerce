@@ -11,7 +11,11 @@ const productSchema = new Schema({
     image : [String],
     category: {type : String , required : true},
     subCategory: {type : String , required : true},
-    sizes: {type : [String] , required : true},
+    sizes: {
+        type : [String] , 
+        required : true,
+        default: ['default']
+    },
     date: {type: Date, default: Date.now },
     bestseller: {type: Boolean , default: false}, 
 },
