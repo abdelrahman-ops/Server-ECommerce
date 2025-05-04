@@ -9,7 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import { routeNotFound, errorHandler } from './middlewares/errorMiddleware.js';
+import { routeNotFound, errorHandler } from './middlewares/error.middleware.js';
 import routes from './routes/index.js';
 import dbConnection from './config/db.js';
 
