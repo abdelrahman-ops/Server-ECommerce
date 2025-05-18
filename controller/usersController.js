@@ -113,6 +113,13 @@ export const loginUser = async (req, res) => {
             });
         }
 
+        if (user.authMethod === 'google') {
+            return res.status(400).json({
+                status: false,
+                message: "This account was created with Google. Please sign in with Google."
+            });
+        }
+
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             return res.status(400).json({
@@ -138,6 +145,7 @@ export const loginUser = async (req, res) => {
                     dateOfBirth: user.dateOfBirth,
                     gender: user.gender,
                     image: user.image,
+                    authMethod: user.authMethod
                 },
                 token
             },

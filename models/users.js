@@ -14,7 +14,17 @@ const userSchema = new Schema({
     dateOfBirth: {type: Date},
     gender: {type: String},
     image: {type: String},
+    authMethod: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
 },
+
 { collection: 'Users' },
 );
 
