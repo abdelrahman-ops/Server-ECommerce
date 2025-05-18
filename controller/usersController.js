@@ -3,21 +3,24 @@ import User from "../models/users.js";
 import { createJWT ,clearJWT  } from '../utils/utility.js';
 import Joi from 'joi';
 import Cart from '../models/cart.js';
+import { userImageStorage } from '../utils/cloudinaryStorage.js';
 
-const storage = multer.diskStorage({
-    destination: function (req , file , cb) {
-        cb(null, 'public/users');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-    }
-})
+export const uploadUserImage = multer({ storage: userImageStorage });
+
+// const storage = multer.diskStorage({
+//     destination: function (req , file , cb) {
+//         cb(null, 'public/users');
+//     },
+//     filename: function (req, file, cb) {
+//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         cb(null, uniqueSuffix + '-' + file.originalname);
+//     }
+// })
 
 
-export const upload = multer({ 
-    storage
-});
+// export const upload = multer({ 
+//     storage
+// });
 
 export const registerUser = async (req, res) => {
     // const registerSchema = Joi.object({
@@ -45,7 +48,8 @@ export const registerUser = async (req, res) => {
             });
         }
         
-        const image = req.file ? `/users/${req.file.filename}` : null;
+        // const image = req.file ? `/users/${req.file.filename}` : null;
+        const image = req.file ? req.file.path : null;
         
         const newUser = new User({
             username,
@@ -205,7 +209,9 @@ export const updateUserProfile = async (req, res) => {
         // Combine regular fields and file information
         const updates = {
             ...req.body,
-            ...(req.file && { image: `/users/${req.file.filename}` }) // Adjust path as needed
+            ...(req.file && { image: `${req.file.path}` })
+            // const image = req.file ? req.file.path : null;
+            // ...(req.file && { image: `/users/${req.file.filename}` });
         };
 
         console.log('Updating with:', updates);

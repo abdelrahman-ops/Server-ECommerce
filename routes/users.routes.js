@@ -5,7 +5,8 @@ import {
     updateUserProfile,
     getUserDetails,
     deleteUserProfile,
-    upload,
+    // upload,
+    uploadUserImage,
 } from "../controller/usersController.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 // import { isAdminRoute, protectRoute } from "../middlewares/authMiddleware.js";
@@ -17,7 +18,7 @@ router.get('/profile' ,protectRoute ,getUserDetails);
 
 router.post('/logout', logoutUser);
 
-router.put('/update', protectRoute ,upload.single('image') ,updateUserProfile);
+router.put('/update', protectRoute , uploadUserImage.single('image') ,updateUserProfile);
 router.put("/update-password", protectRoute, changeUserPassword);
 
 

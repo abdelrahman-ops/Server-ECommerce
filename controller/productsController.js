@@ -1,23 +1,26 @@
 import multer from 'multer';
 import Product from "../models/products.js";
 import { v4 as uuidv4 } from 'uuid';
+import { productImageStorage } from '../utils/cloudinaryStorage.js';
+
+export const uploadProductImages = multer({ storage: productImageStorage });
 
 
 
-const storage = multer.diskStorage({
-    destination: function (req , file , cb) {
-        cb(null, 'public/images');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-    }
-})
+// const storage = multer.diskStorage({
+//     destination: function (req , file , cb) {
+//         cb(null, 'public/images');
+//     },
+//     filename: function (req, file, cb) {
+//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         cb(null, uniqueSuffix + '-' + file.originalname);
+//     }
+// })
 
 
-export const upload = multer({ 
-    storage
-});
+// export const upload = multer({ 
+//     storage
+// });
 
 // Get all products
 export const getAllProducts = async (req, res) => {
@@ -51,7 +54,8 @@ export const addProduct = async (req, res) => {
         const { _id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
         const sizeArray = sizes ? sizes.split(',') : [];
         // const images = req.files.map(file => file.path); 
-        const images = req.files.map(file => `/images/${file.filename}`);
+        // const images = req.files.map(file => `/images/${file.filename}`);
+        const images = req.files.map(file => file.path);
         
         const newProduct = new Product({
             _id: uuidv4(),
@@ -78,7 +82,8 @@ export const addProduct = async (req, res) => {
 export const updateProduct = async (req , res) => {
     try {
         const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
-        const images = req.files ? req.files.map(file => `/images/${file.filename}`) : undefined ;
+        // const images = req.files ? req.files.map(file => `/images/${file.filename}`) : undefined ;
+        const images = req.files.map(file => file.path);
         const sizeArray = sizes ? sizes.split(',') : [];
 
         const updatedProduct  = await Product.findByIdAndUpdate(
