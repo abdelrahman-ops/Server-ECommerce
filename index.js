@@ -93,24 +93,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-// Serve static files
-app.use('/images', express.static(join(__dirname, 'public/images')));
-
-app.use('/users', express.static(join(__dirname, 'public/users')));
-
-// Swagger UI route
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Basic routes
+app.get("/", (req, res) => res.send("Server is up and running"));
+app.get("/health", (req, res) => res.send("OK"));
 
 // API routes
 app.use('/api', routes);
 
+// Documentation routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+// Serve static files
+app.use('/images', express.static(join(__dirname, 'public/images')));
+app.use('/users', express.static(join(__dirname, 'public/users')));
+
 // Handle errors
 app.use(routeNotFound);
 app.use(errorHandler);
-
-app.get("/", (req, res) => {
-    res.send("Server is up and running");
-});
 
 const PORT = process.env.PORT || 5000;
 
